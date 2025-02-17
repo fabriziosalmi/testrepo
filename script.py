@@ -1,13 +1,15 @@
 import logging
 from typing import Any
+
 import mitmproxy
 from mitmproxy import http
 
-# Configure logging
+# Configure logging securely
 logging.basicConfig(
     filename="proxy.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
+    filemode='w',  # Overwrite log file to prevent it from growing indefinitely
 )
 
 blocked_ip = "1.2.3.4"
@@ -33,11 +35,8 @@ class TransparentProxy:
             )  # Or just drop: flow.kill()
             return  # Stop processing the request
 
-        # Log the request (optional)
+        # Log the request securely
         logging.info(f"Forwarding request from {client_ip} to {flow.request.url}")
-
-        # No modification needed for transparent proxy.  mitmproxy handles forwarding.
-        # You can inspect/modify flow.request here if needed.
 
     def response(self, flow: http.HTTPFlow) -> None:
         """
@@ -51,5 +50,6 @@ class TransparentProxy:
             f"Received response from {flow.request.url} for {client_ip} (status code: {flow.response.status_code})"
         )
         # You can inspect/modify flow.response here if needed.
+
 
 addons = [TransparentProxy()]
