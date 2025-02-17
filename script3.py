@@ -1,8 +1,8 @@
-import math
 import logging
+import math
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging with a more appropriate level for production environments
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def add(a: int, b: int) -> int:
     """Return the sum of a and b."""
@@ -19,8 +19,8 @@ def multiply(a: int, b: int) -> int:
 def divide(a: float, b: float) -> float:
     """Return the quotient of a and b. Handles division by zero."""
     if b == 0:
-        logging.error("Cannot divide by zero")
-        raise ValueError("Cannot divide by zero")
+        logging.error("Attempted to divide by zero")
+        raise ValueError("Cannot perform division by zero")
     return a / b
 
 def factorial(n: int) -> int:
