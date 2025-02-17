@@ -1,9 +1,10 @@
 import logging
 from typing import Any
+
 import mitmproxy
 from mitmproxy import http
 
-# Configure logging
+# Configure logging securely
 logging.basicConfig(
     filename="proxy.log",
     level=logging.INFO,
@@ -12,17 +13,18 @@ logging.basicConfig(
 
 blocked_ip = "1.2.3.4"
 
+
 class TransparentProxy:
     """
     A transparent proxy class to block requests from a specific IP address and log other requests.
     """
 
-    def request(self, flow: http.HTTPFlow) -> None:
+    def request(self, flow: mitmproxy.http.HTTPFlow) -> None:
         """
         Handle the HTTP request.
 
         Args:
-            flow (http.HTTPFlow): The HTTP flow object containing the request and response information.
+            flow (mitmproxy.http.HTTPFlow): The HTTP flow object containing the request and response information.
         """
         client_ip = flow.client_address[0]  # Get client IP
 
@@ -39,17 +41,19 @@ class TransparentProxy:
         # No modification needed for transparent proxy.  mitmproxy handles forwarding.
         # You can inspect/modify flow.request here if needed.
 
-    def response(self, flow: http.HTTPFlow) -> None:
+    def response(self, flow: mitmproxy.http.HTTPFlow) -> None:
         """
         Handle the HTTP response.
 
         Args:
-            flow (http.HTTPFlow): The HTTP flow object containing the request and response information.
+            flow (mitmproxy.http.HTTPFlow): The HTTP flow object containing the request and response information.
         """
         client_ip = flow.client_address[0]
         logging.info(
-            f"Received response from {flow.request.url} for {client_ip} (status code: {flow.response.status_code})"
+            f"Received response from {flow.request.url} for {client_ip} "
+            f"(status code: {flow.response.status_code})"
         )
         # You can inspect/modify flow.response here if needed.
+
 
 addons = [TransparentProxy()]
