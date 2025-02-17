@@ -1,32 +1,74 @@
-import math
 import logging
+import math
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def add(a: int, b: int) -> int:
-    """Return the sum of a and b."""
+    """Return the sum of a and b.
+
+    Args:
+        a (int): The first number.
+        b (int): The second number.
+
+    Returns:
+        int: The sum of a and b.
+    """
     return a + b
 
 def subtract(a: int, b: int) -> int:
-    """Return the difference of a and b."""
+    """Return the difference of a and b.
+
+    Args:
+        a (int): The first number.
+        b (int): The second number.
+
+    Returns:
+        int: The difference of a and b.
+    """
     return a - b
 
 def multiply(a: int, b: int) -> int:
-    """Return the product of a and b."""
+    """Return the product of a and b.
+
+    Args:
+        a (int): The first number.
+        b (int): The second number.
+
+    Returns:
+        int: The product of a and b.
+    """
     return a * b
 
 def divide(a: float, b: float) -> float:
-    """Return the quotient of a and b. Handles division by zero."""
+    """Return the quotient of a and b. Handles division by zero.
+
+    Args:
+        a (float): The numerator.
+        b (float): The denominator.
+
+    Returns:
+        float: The quotient of a and b.
+
+    Raises:
+        ValueError: If division by zero is attempted.
+    """
     if b == 0:
-        logging.error("Cannot divide by zero")
+        logging.error("Attempted to divide by zero")
         raise ValueError("Cannot divide by zero")
     return a / b
 
 def factorial(n: int) -> int:
-    """Return the factorial of n using an iterative approach. More efficient for large n."""
-    if n == 0:
-        return 1
+    """Return the factorial of n using an iterative approach. More efficient for large n.
+
+    Args:
+        n (int): The number to calculate the factorial of.
+
+    Returns:
+        int: The factorial of n.
+    """
+    if n < 0:
+        raise ValueError("Factorial is not defined for negative numbers")
     result = 1
     for i in range(2, n + 1):
         result *= i
