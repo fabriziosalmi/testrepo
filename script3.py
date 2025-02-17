@@ -1,28 +1,43 @@
-# Simple Python script with various basic operations
 import math
 
-def add(a, b):
+
+def add(a: int, b: int) -> int:
+    """Return the sum of two integers."""
     return a + b
 
-def subtract(a, b):
+
+def subtract(a: int, b: int) -> int:
+    """Return the difference between two integers."""
     return a - b
 
-def multiply(a, b):
+
+def multiply(a: int, b: int) -> int:
+    """Return the product of two integers."""
     return a * b
 
-def divide(a, b):
-    # Not handling divide by zero case
+
+def divide(a: float, b: float) -> float:
+    """Return the quotient of two floats.
+
+    Raises:
+        ValueError: If divisor is zero.
+    """
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
     return a / b
 
-def factorial(n):
-    # Inefficient recursion for factorial
-    if n == 0:
-        return 1
-    else:
-        return n * factorial(n - 1)
+
+def factorial(n: int) -> int:
+    """Return the factorial of a non-negative integer."""
+    if n < 0:
+        raise ValueError("Input must be a non-negative integer")
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
 
 def main():
-    # Some hardcoded values for testing
     x = 10
     y = 5
 
@@ -32,13 +47,11 @@ def main():
     print("Division:", divide(x, y))
     print("Factorial of 5:", factorial(5))
 
-    # Some unnecessary global variable usage
-    global result
     result = add(x, y)
 
-    # Unoptimized loop
     for i in range(10):
-        print("Square root of", i, "is", math.sqrt(i))
+        print(f"Square root of {i} is {math.sqrt(i)}")
+
 
 if __name__ == "__main__":
     main()
