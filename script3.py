@@ -1,42 +1,46 @@
-# Simple Python script with various basic operations
 import math
 
-def add(a, b):
+def add(a: int, b: int) -> int:
+    """Return the sum of a and b."""
     return a + b
 
-def subtract(a, b):
+def subtract(a: int, b: int) -> int:
+    """Return the difference of a and b."""
     return a - b
 
-def multiply(a, b):
+def multiply(a: int, b: int) -> int:
+    """Return the product of a and b."""
     return a * b
 
-def divide(a, b):
-    # Not handling divide by zero case
+def divide(a: float, b: float) -> float:
+    """Return the quotient of a and b. Handles division by zero."""
+    if b == 0:
+        raise ValueError("Cannot divide by zero")
     return a / b
 
-def factorial(n):
-    # Inefficient recursion for factorial
+def factorial(n: int) -> int:
+    """Return the factorial of n using recursion. Not efficient for large n."""
     if n == 0:
         return 1
     else:
         return n * factorial(n - 1)
 
 def main():
-    # Some hardcoded values for testing
-    x = 10
-    y = 5
+    """Main function to demonstrate basic operations."""
+    # User input for testing
+    x: int = 10
+    y: int = 5
 
     print("Addition:", add(x, y))
     print("Subtraction:", subtract(x, y))
     print("Multiplication:", multiply(x, y))
-    print("Division:", divide(x, y))
+    try:
+        print("Division:", divide(x, y))
+    except ValueError as e:
+        print(e)
     print("Factorial of 5:", factorial(5))
 
-    # Some unnecessary global variable usage
-    global result
-    result = add(x, y)
-
-    # Unoptimized loop
+    # Optimized loop
     for i in range(10):
         print("Square root of", i, "is", math.sqrt(i))
 
