@@ -1,16 +1,21 @@
 import logging
 from typing import Any
+import ipaddress  # For IP validation
 import mitmproxy
 from mitmproxy import http
 
 # Configure logging
 logging.basicConfig(
     filename="proxy.log",
-    level=logging.INFO,
+    level=logging.DEBUG,  # Increased to DEBUG for more detailed logs
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
-blocked_ip = "1.2.3.4"
+# Validate the blocked IP address
+try:
+    blocked_ip = ipaddress.ip_address("1.2.3.4")  # Ensure it's a valid IP
+except ValueError:
+    raise ValueError("Invalid blocked IP address")
 
 class TransparentProxy:
     """
@@ -26,7 +31,7 @@ class TransparentProxy:
         """
         client_ip = flow.client_address[0]  # Get client IP
 
-        if client_ip == blocked_ip:
+        if client_ip == str(blocked_ip):
             logging.info(f"Blocked request from {client_ip} to {flow.request.url}")
             flow.response = http.HTTPResponse.make(
                 403, b"Forbidden", {"Content-Type": "text/plain"}
@@ -34,10 +39,7 @@ class TransparentProxy:
             return  # Stop processing the request
 
         # Log the request (optional)
-        logging.info(f"Forwarding request from {client_ip} to {flow.request.url}")
-
-        # No modification needed for transparent proxy.  mitmproxy handles forwarding.
-        # You can inspect/modify flow.request here if needed.
+        logging.debug(f"Forwarding request from {client_ip} to {flow.request.url}")
 
     def response(self, flow: http.HTTPFlow) -> None:
         """
@@ -47,9 +49,21 @@ class TransparentProxy:
             flow (http.HTTPFlow): The HTTP flow object containing the request and response information.
         """
         client_ip = flow.client_address[0]
-        logging.info(
-            f"Received response from {flow.request.url} for {client_ip} (status code: {flow.response.status_code})"
+        logging.debug(
+            f"Received response from {flow.request.url} for {client_ip} "
+            f"(status code: {flow.response.status_code})"
         )
-        # You can inspect/modify flow.response here if needed.
+
+    def error(self, flow: http.HTTPFlow) -> None:
+        """
+        Handle any errors that occur during request or response processing.
+
+        Args:
+            flow (http.HTTPFlow): The HTTP flow object containing the request and response information.
+        """
+        client_ip = flow.client_address[0]
+        logging.error(
+            f"Error processing request from {client_ip} to {flow.request.url}: {str(flow.error)}"
+        )
 
 addons = [TransparentProxy()]
