@@ -1,5 +1,6 @@
 import logging
 from typing import Any
+
 import mitmproxy
 from mitmproxy import http
 
@@ -11,6 +12,7 @@ logging.basicConfig(
 )
 
 blocked_ip = "1.2.3.4"
+
 
 class TransparentProxy:
     """
@@ -51,5 +53,6 @@ class TransparentProxy:
             f"Received response from {flow.request.url} for {client_ip} (status code: {flow.response.status_code})"
         )
         # You can inspect/modify flow.response here if needed.
+
 
 addons = [TransparentProxy()]
