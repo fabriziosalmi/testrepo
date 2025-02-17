@@ -1,4 +1,8 @@
 import math
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def add(a: int, b: int) -> int:
     """Return the sum of a and b."""
@@ -15,15 +19,18 @@ def multiply(a: int, b: int) -> int:
 def divide(a: float, b: float) -> float:
     """Return the quotient of a and b. Handles division by zero."""
     if b == 0:
+        logging.error("Cannot divide by zero")
         raise ValueError("Cannot divide by zero")
     return a / b
 
 def factorial(n: int) -> int:
-    """Return the factorial of n using recursion. Not efficient for large n."""
+    """Return the factorial of n using an iterative approach. More efficient for large n."""
     if n == 0:
         return 1
-    else:
-        return n * factorial(n - 1)
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
 
 def main():
     """Main function to demonstrate basic operations."""
