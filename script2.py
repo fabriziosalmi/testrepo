@@ -3,8 +3,6 @@ import os
 import socketserver
 from urllib.parse import unquote, urlparse
 
-
-# Function to validate if a file path exists
 def validate_file_path(file_path: str) -> bool:
     """
     Validates if the provided file path exists.
@@ -16,22 +14,21 @@ def validate_file_path(file_path: str) -> bool:
         bool: True if the file exists, False otherwise.
     """
     parsed_url = urlparse(file_path)
-    # Convert "URL-like" path to a local file path
     local_path = unquote(parsed_url.path)
+    
+    # Ensure the path is within a safe directory to prevent directory traversal
+    safe_directory = "/safe/directory/path"  # Replace with a real safe directory path
+    if not local_path.startswith(safe_directory):
+        print("Attempted to access a file outside the safe directory.")
+        return False
+    
     if os.path.exists(local_path):
         print(f"File exists: {local_path}")
         return True
     else:
-        print(f"File does not exist: {local_path}")
+        print("File does not exist.")
         return False
 
-
-# Validate an example file path
-example_path = "file:///path/to/your/example.txt"  # Replace with a real path
-validate_file_path(example_path)
-
-
-# Create a simple HTTP server
 class HelloWorldHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
         """
@@ -42,13 +39,17 @@ class HelloWorldHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"Hello, World!")
 
-
-# Start the HTTP server
 PORT = 8080
-with socketserver.TCPServer(("", PORT), HelloWorldHandler) as httpd:
-    print(f"Serving HTTP on port {PORT}...")
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("\nShutting down server.")
-        httpd.server_close()
+
+# Implement a graceful shutdown mechanism
+def run_server():
+    with socketserver.TCPServer(("", PORT), HelloWorldHandler) as httpd:
+        print(f"Serving HTTP on port {PORT}...")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\nShutting down server.")
+            httpd.server_close()
+
+if __name__ == "__main__":
+    run_server()
