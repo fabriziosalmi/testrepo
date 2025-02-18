@@ -4,25 +4,32 @@ import socketserver
 from urllib.parse import unquote, urlparse
 
 
-# Function to validate if a file path exists
+# Function to validate if a file path exists and is safe
 def validate_file_path(file_path: str) -> bool:
     """
-    Validates if the provided file path exists.
+    Validates if the provided file path exists and is safe.
 
     Args:
         file_path (str): The file path to validate.
 
     Returns:
-        bool: True if the file exists, False otherwise.
+        bool: True if the file exists and is safe, False otherwise.
     """
     parsed_url = urlparse(file_path)
     # Convert "URL-like" path to a local file path
     local_path = unquote(parsed_url.path)
-    if os.path.exists(local_path):
-        print(f"File exists: {local_path}")
+    
+    # Ensure the path is absolute and does not traverse up
+    abs_path = os.path.abspath(local_path)
+    if not abs_path.startswith(os.path.abspath(".")):
+        print("Attempted directory traversal attack detected.")
+        return False
+    
+    if os.path.exists(abs_path):
+        print(f"File exists: {abs_path}")
         return True
     else:
-        print(f"File does not exist: {local_path}")
+        print(f"File does not exist: {abs_path}")
         return False
 
 
@@ -33,6 +40,10 @@ validate_file_path(example_path)
 
 # Create a simple HTTP server
 class HelloWorldHandler(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, format, *args):
+        # Suppress or anonymize sensitive information in error messages
+        pass
+
     def do_GET(self) -> None:
         """
         Handles GET requests by responding with "Hello, World!".
