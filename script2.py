@@ -2,7 +2,10 @@ import http.server
 import os
 import socketserver
 from urllib.parse import unquote, urlparse
+import logging
 
+# Set up basic configuration for logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Function to validate if a file path exists
 def validate_file_path(file_path: str) -> bool:
@@ -18,11 +21,17 @@ def validate_file_path(file_path: str) -> bool:
     parsed_url = urlparse(file_path)
     # Convert "URL-like" path to a local file path
     local_path = unquote(parsed_url.path)
+    
+    # Validate the input to ensure it does not contain malicious characters
+    if not local_path.isprintable():
+        logging.warning(f"Invalid file path: {local_path}")
+        return False
+    
     if os.path.exists(local_path):
-        print(f"File exists: {local_path}")
+        logging.info(f"File exists: {local_path}")
         return True
     else:
-        print(f"File does not exist: {local_path}")
+        logging.warning(f"File does not exist: {local_path}")
         return False
 
 
@@ -46,9 +55,9 @@ class HelloWorldHandler(http.server.SimpleHTTPRequestHandler):
 # Start the HTTP server
 PORT = 8080
 with socketserver.TCPServer(("", PORT), HelloWorldHandler) as httpd:
-    print(f"Serving HTTP on port {PORT}...")
+    logging.info(f"Serving HTTP on port {PORT}...")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nShutting down server.")
+        logging.info("\nShutting down server.")
         httpd.server_close()
